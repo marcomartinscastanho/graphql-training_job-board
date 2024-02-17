@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.ts"
   },
   "dependencies": {
     "better-sqlite3": "^9.0.0",
@@ -16,9 +16,10 @@
     "nanoid": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.3",
+    "tsx": "^4.7.1"
   },
   "nodemonConfig": {
-    "ext": "graphql,js"
+    "ext": "graphql,js,ts"
   }
 }

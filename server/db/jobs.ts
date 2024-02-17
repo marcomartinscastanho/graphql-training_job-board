@@ -1,17 +1,23 @@
-import { connection } from './connection.js';
-import { generateId } from './ids.js';
+import { connection } from "./connection";
+import { generateId } from "./ids";
 
-const getJobTable = () => connection.table('job');
+const getJobTable = () => connection.table("job");
 
 export async function getJobs() {
   return await getJobTable().select();
 }
 
-export async function getJob(id) {
+export async function getJob(id: string) {
   return await getJobTable().first().where({ id });
 }
 
-export async function createJob({ companyId, title, description }) {
+interface ICreateJob {
+  companyId: string;
+  title: string;
+  description: string;
+}
+
+export async function createJob({ companyId, title, description }: ICreateJob) {
   const job = {
     id: generateId(),
     companyId,
@@ -23,7 +29,7 @@ export async function createJob({ companyId, title, description }) {
   return job;
 }
 
-export async function deleteJob(id) {
+export async function deleteJob(id: string) {
   const job = await getJobTable().first().where({ id });
   if (!job) {
     throw new Error(`Job not found: ${id}`);
@@ -32,7 +38,13 @@ export async function deleteJob(id) {
   return job;
 }
 
-export async function updateJob({ id, title, description }) {
+interface IUpdateJob {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export async function updateJob({ id, title, description }: IUpdateJob) {
   const job = await getJobTable().first().where({ id });
   if (!job) {
     throw new Error(`Job not found: ${id}`);
