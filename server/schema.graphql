@@ -2,6 +2,12 @@ type Query {
   jobs: [Job]
 }
 
+type Company {
+  id: ID!
+  name: String!
+  description: String
+}
+
 """
 Represents a job ad posted to our board.
 """
@@ -14,4 +20,5 @@ type Job {
   E.g. `2022-12-13`.
   """
   date: String!
+  company: Company!
 }
