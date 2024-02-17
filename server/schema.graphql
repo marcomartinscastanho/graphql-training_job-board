@@ -2,9 +2,16 @@ type Query {
   jobs: [Job]
 }
 
+"""
+Represents a job ad posted to our board.
+"""
 type Job {
   id: ID!
   title: String!
   description: String
+  """
+  The __date__ when the job was published, in ISO-8601 format.
+  E.g. `2022-12-13`.
+  """
   date: String!
 }
