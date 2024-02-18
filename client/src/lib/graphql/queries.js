@@ -35,7 +35,6 @@ export const getJob = async (id) => {
       }
     }
   `;
-
   const { job } = await client.request(query, { id });
   return job;
 };
@@ -54,7 +53,6 @@ export const getCompany = async (id) => {
       }
     }
   `;
-
   const { company } = await client.request(query, { id });
   return company;
 };
