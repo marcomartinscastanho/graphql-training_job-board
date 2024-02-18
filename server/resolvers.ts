@@ -1,14 +1,26 @@
+import { GraphQLError } from "graphql";
 import { getCompany } from "./db/companies";
 import { getJob, getJobs, getJobsByCompanyId } from "./db/jobs";
 
 export const resolvers = {
   Query: {
-    company: (_root, { id }) => getCompany(id),
+    company: async (_root, { id }) => {
+      const company = await getCompany(id);
+
+      if (!company) {
+        throw notFoundError("No Company found with id " + id);
+      }
+
+      return company;
+    },
     // the first parameter of this resolver is the root object, which is useless here
     // the second parameter however is the request arguments object
-    job: (_root, args) => {
-      const { id } = args;
-      return getJob(id);
+    job: async (_root, { id }) => {
+      const job = await getJob(id);
+      if (!job) {
+        throw notFoundError("No Job found with id " + id);
+      }
+      return job;
     },
     jobs: () => getJobs(),
   },
@@ -27,4 +39,12 @@ export const resolvers = {
     date: (job) => job.createdAt.slice(0, "yyyy-mm-dd".length),
     company: (job) => getCompany(job.companyId),
   },
+};
+
+const notFoundError = (message: string) => {
+  return new GraphQLError(message, {
+    extensions: {
+      code: "NOT_FOUND",
+    },
+  });
 };
