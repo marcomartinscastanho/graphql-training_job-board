@@ -8,6 +8,7 @@ type Company {
   id: ID!
   name: String!
   description: String
+  jobs: [Job!]! # the first ! means the list cannot contain null values; the second means jobs cannot be null
 }
 
 """

@@ -1,5 +1,5 @@
 import { getCompany } from "./db/companies";
-import { getJob, getJobs } from "./db/jobs";
+import { getJob, getJobs, getJobsByCompanyId } from "./db/jobs";
 
 export const resolvers = {
   Query: {
@@ -11,6 +11,14 @@ export const resolvers = {
       return getJob(id);
     },
     jobs: () => getJobs(),
+  },
+
+  // when you query for objects that exist on the DB, graphql will return them
+  // but if you query for fields that are not on the DB, or are under a different name
+  // then you need a resolver for those fields (e.g. job doesn't have a date column)
+
+  Company: {
+    jobs: (company) => getJobsByCompanyId(company.id),
   },
 
   Job: {
