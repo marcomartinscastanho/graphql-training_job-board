@@ -3,6 +3,7 @@ import { getJob, getJobs } from "./db/jobs";
 
 export const resolvers = {
   Query: {
+    company: (_root, { id }) => getCompany(id),
     // the first parameter of this resolver is the root object, which is useless here
     // the second parameter however is the request arguments object
     job: (_root, args) => {
