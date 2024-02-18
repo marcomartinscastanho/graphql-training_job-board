@@ -56,3 +56,22 @@ export const getCompany = async (id) => {
   const { company } = await client.request(query, { id });
   return company;
 };
+
+export const createJob = async ({ title, description }) => {
+  const mutation = gql`
+    mutation CreateJob($input: CreateJobInput!) {
+      # job is an alias for the createJob mutation
+      # so that the response has a job object and not a createJob object
+      job: createJob(input: $input) {
+        id
+      }
+    }
+  `;
+  const { job } = await client.request(mutation, {
+    input: {
+      title,
+      description,
+    },
+  });
+  return job;
+};
