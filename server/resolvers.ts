@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { getCompany } from "./db/companies";
-import { createJob, getJob, getJobs, getJobsByCompanyId } from "./db/jobs";
+import { createJob, deleteJob, getJob, getJobs, getJobsByCompanyId } from "./db/jobs";
 
 export const resolvers = {
   Query: {
@@ -44,6 +44,9 @@ export const resolvers = {
     createJob: (_root, { input: { title, description } }) => {
       const companyId = "FjcJCHJALA4i"; // TODO: temp
       return createJob({ title, description, companyId });
+    },
+    deleteJob: (_root, { id }) => {
+      return deleteJob(id);
     },
   },
 };
