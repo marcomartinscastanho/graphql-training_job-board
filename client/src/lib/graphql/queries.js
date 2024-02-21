@@ -31,8 +31,8 @@ export const getJobs = async () => {
       }
     }
   `;
-  const { jobs } = await client.request(query);
-  return jobs;
+  const { data } = await apolloClient.query({ query });
+  return data.jobs;
 };
 
 export const getJob = async (id) => {
@@ -50,8 +50,8 @@ export const getJob = async (id) => {
       }
     }
   `;
-  const { job } = await client.request(query, { id });
-  return job;
+  const { data } = await apolloClient.query({ query, variables: { id } });
+  return data.job;
 };
 
 export const getCompany = async (id) => {
