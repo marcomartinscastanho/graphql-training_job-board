@@ -1,35 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { createJobMutation, jobByIdQuery } from "../lib/graphql/queries";
-import { useMutation } from "@apollo/client";
+import { useCreateJob } from "../lib/graphql/hooks";
 
 function CreateJobPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  // unlike queries, useMutation doesn't send the mutation when called
-  // only when the returned "mutate" function is called
-  // so that we can control when the mutation is called (when the form is submitted)
-  // and not automatically when the page is loaded
-  const [mutate, { loading }] = useMutation(createJobMutation);
+  const { createJob, loading } = useCreateJob();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const {
-      data: { job },
-    } = await mutate({
-      variables: { input: { title, description } },
-      // what this does is: when we call the mutation to create the job, it returns the created job
-      // so we explicitly add the returned data to the cache
-      // so that the next time this job is queried, it's already in cache
-      update: (cache, { data }) => {
-        cache.writeQuery({
-          query: jobByIdQuery,
-          variables: { id: data.job.id },
-          data,
-        });
-      },
-    });
+    const job = await createJob(title, description);
     navigate(`/jobs/${job.id}`);
   };
 
