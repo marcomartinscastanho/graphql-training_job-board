@@ -72,33 +72,15 @@ export const jobsQuery = gql`
   }
 `;
 
-export const createJob = async ({ title, description }) => {
-  const mutation = gql`
-    mutation CreateJob($input: CreateJobInput!) {
-      # job is an alias for the createJob mutation
-      # so that the response has a job object and not a createJob object
-      job: createJob(input: $input) {
-        # we need to get all the job info, so that we store it in the cache
-        # this we we avoid getting the job in a separate request after creating it
-        ...JobDetail
-      }
+export const createJobMutation = gql`
+  mutation CreateJob($input: CreateJobInput!) {
+    # job is an alias for the createJob mutation
+    # so that the response has a job object and not a createJob object
+    job: createJob(input: $input) {
+      # we need to get all the job info, so that we store it in the cache
+      # this we we avoid getting the job in a separate request after creating it
+      ...JobDetail
     }
-    ${jobDetailFragment}
-  `;
-  const { data } = await apolloClient.mutate({
-    mutation,
-    variables: { input: { title, description } },
-    // what this does is: when we call the mutation to create the job, it returns the created job
-    // so we explicitly add the returned data to the cache
-    // so that the next time this job is queried, it's already in cache
-    update: (cache, { data }) => {
-      cache.writeQuery({
-        query: jobByIdQuery,
-        variables: { id: data.job.id },
-        data,
-      });
-    },
-  });
-
-  return data.job;
-};
+  }
+  ${jobDetailFragment}
+`;
