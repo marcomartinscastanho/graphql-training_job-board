@@ -46,12 +46,12 @@ export const resolvers = {
     // and make it available to the resolver
     // by default, it's an empty object
     createJob: (_root, { input: { title, description } }, context) => {
-      const { auth } = context;
-      if (!auth) {
+      const { user } = context;
+      console.log("[createJob] user:", user);
+      if (!user) {
         throw unauthorizedError("Missing authentication");
       }
-      const companyId = "FjcJCHJALA4i"; // TODO: temp
-      return createJob({ title, description, companyId });
+      return createJob({ title, description, companyId: user.companyId });
     },
     deleteJob: (_root, { id }) => {
       return deleteJob(id);
