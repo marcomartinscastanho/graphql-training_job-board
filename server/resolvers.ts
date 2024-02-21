@@ -61,8 +61,14 @@ export const resolvers = {
         throw notFoundError("No Job found with id " + id);
       }
     },
-    updateJob: (_root, { input: { id, title, description } }) => {
-      return updateJob({ id, title, description });
+    updateJob: async (_root, { input: { id, title, description } }, { user }) => {
+      if (!user) {
+        throw unauthorizedError("Missing authentication");
+      }
+      const job = await updateJob({ id, title, description }, user.companyId);
+      if (!job) {
+        throw notFoundError("No Job found with id " + id);
+      }
     },
   },
 };

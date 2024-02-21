@@ -48,10 +48,10 @@ interface IUpdateJob {
   description: string;
 }
 
-export async function updateJob({ id, title, description }: IUpdateJob) {
-  const job = await getJobTable().first().where({ id });
+export async function updateJob({ id, title, description }: IUpdateJob, companyId: string) {
+  const job = await getJobTable().first().where({ id, companyId });
   if (!job) {
-    throw new Error(`Job not found: ${id}`);
+    return null;
   }
   const updatedFields = { title, description };
   await getJobTable().update(updatedFields).where({ id });
