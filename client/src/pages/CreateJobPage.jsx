@@ -11,7 +11,7 @@ function CreateJobPage() {
   // only when the returned "mutate" function is called
   // so that we can control when the mutation is called (when the form is submitted)
   // and not automatically when the page is loaded
-  const [mutate] = useMutation(createJobMutation);
+  const [mutate, { loading }] = useMutation(createJobMutation);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -52,7 +52,7 @@ function CreateJobPage() {
           </div>
           <div className="field">
             <div className="control">
-              <button className="button is-link" onClick={handleSubmit}>
+              <button className="button is-link" onClick={handleSubmit} disabled={loading}>
                 Submit
               </button>
             </div>
