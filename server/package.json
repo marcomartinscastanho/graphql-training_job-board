@@ -20,6 +20,6 @@
     "tsx": "^4.7.1"
   },
   "nodemonConfig": {
-    "ext": "graphql,js,ts"
+    "ext": "graphql,js,ts,jsx,tsx"
   }
 }

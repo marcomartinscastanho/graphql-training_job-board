@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
 import JobList from "../components/JobList";
-import { getJobs } from "../lib/graphql/queries";
+import { useJobs } from "../lib/graphql/hooks";
 
 function HomePage() {
-  const [jobs, setJobs] = useState([]);
-
-  useEffect(() => {
-    getJobs().then(setJobs);
-  }, []);
+  const { jobs } = useJobs();
 
   return (
     <div>
