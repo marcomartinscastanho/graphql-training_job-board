@@ -33,10 +33,10 @@ export async function createJob({ companyId, title, description }: ICreateJob) {
   return job;
 }
 
-export async function deleteJob(id: string) {
-  const job = await getJobTable().first().where({ id });
+export async function deleteJob(id: string, companyId: string) {
+  const job = await getJobTable().first().where({ id, companyId });
   if (!job) {
-    throw new Error(`Job not found: ${id}`);
+    return null;
   }
   await getJobTable().delete().where({ id });
   return job;

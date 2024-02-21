@@ -47,14 +47,19 @@ export const resolvers = {
     // by default, it's an empty object
     createJob: (_root, { input: { title, description } }, context) => {
       const { user } = context;
-      console.log("[createJob] user:", user);
       if (!user) {
         throw unauthorizedError("Missing authentication");
       }
       return createJob({ title, description, companyId: user.companyId });
     },
-    deleteJob: (_root, { id }) => {
-      return deleteJob(id);
+    deleteJob: async (_root, { id }, { user }) => {
+      if (!user) {
+        throw unauthorizedError("Missing authentication");
+      }
+      const job = await deleteJob(id, user.companyId);
+      if (!job) {
+        throw notFoundError("No Job found with id " + id);
+      }
     },
     updateJob: (_root, { input: { id, title, description } }) => {
       return updateJob({ id, title, description });
