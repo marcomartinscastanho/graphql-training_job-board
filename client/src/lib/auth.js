@@ -1,11 +1,11 @@
 // Disclaimer: This example keeps the access token in LocalStorage just because
 // it's simpler, but in a real application you may want to use cookies instead
 // for better security. Also, it doesn't handle token expiration.
-import jwtDecode from 'jwt-decode';
+import jwtDecode from "jwt-decode";
 
-const API_URL = 'http://localhost:9000';
+const API_URL = "http://localhost:9000";
 
-const ACCESS_TOKEN_KEY = 'accessToken';
+const ACCESS_TOKEN_KEY = "accessToken";
 
 export function getAccessToken() {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -13,9 +13,9 @@ export function getAccessToken() {
 
 export async function login(email, password) {
   const response = await fetch(`${API_URL}/login`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
   });
