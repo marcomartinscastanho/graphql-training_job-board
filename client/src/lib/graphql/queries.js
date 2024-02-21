@@ -18,19 +18,30 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+// in order to avoid having to list all the fields of the job in every query,
+// one can define a fragment with certain Job fields that are often queried
+// and then query for the fields in the fragment
+const jobDetailFragment = gql`
+  fragment JobDetail on Job {
+    id
+    title
+    description
+    date
+    company {
+      id
+      name
+    }
+  }
+`;
+
 const jobByIdQuery = gql`
   query JobById($id: ID!) {
     job(id: $id) {
-      id
-      title
-      description
-      date
-      company {
-        id
-        name
-      }
+      ...JobDetail
     }
   }
+  # the definition of the fragment must be included along the query
+  ${jobDetailFragment}
 `;
 
 export const getJobs = async () => {
@@ -80,18 +91,12 @@ export const createJob = async ({ title, description }) => {
       # job is an alias for the createJob mutation
       # so that the response has a job object and not a createJob object
       job: createJob(input: $input) {
-        id
         # we need to get all the job info, so that we store it in the cache
         # this we we avoid getting the job in a separate request after creating it
-        title
-        description
-        date
-        company {
-          id
-          name
-        }
+        ...JobDetail
       }
     }
+    ${jobDetailFragment}
   `;
   const { data } = await apolloClient.mutate({
     mutation,
