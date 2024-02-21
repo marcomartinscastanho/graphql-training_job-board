@@ -41,7 +41,15 @@ export const resolvers = {
   },
 
   Mutation: {
-    createJob: (_root, { input: { title, description } }) => {
+    // the 3rd parameter of a resolver function is the context
+    // context is an object where we can put anything we want
+    // and make it available to the resolver
+    // by default, it's an empty object
+    createJob: (_root, { input: { title, description } }, context) => {
+      const { auth } = context;
+      if (!auth) {
+        throw unauthorizedError("Missing authentication");
+      }
       const companyId = "FjcJCHJALA4i"; // TODO: temp
       return createJob({ title, description, companyId });
     },
@@ -58,6 +66,14 @@ const notFoundError = (message: string) => {
   return new GraphQLError(message, {
     extensions: {
       code: "NOT_FOUND",
+    },
+  });
+};
+
+const unauthorizedError = (message: string) => {
+  return new GraphQLError(message, {
+    extensions: {
+      code: "UNAUTHORIZED",
     },
   });
 };
