@@ -3,8 +3,6 @@ import { getAccessToken } from "../auth";
 
 const httpLink = createHttpLink({ uri: "http://localhost:9000/graphql" });
 const authLink = new ApolloLink((operation, forward) => {
-  console.log("[customLink] operation:", operation);
-
   const accessToken = getAccessToken();
   if (accessToken) {
     operation.setContext({
@@ -19,6 +17,21 @@ const apolloClient = new ApolloClient({
   link: concat(authLink, httpLink),
   cache: new InMemoryCache(),
 });
+
+const jobByIdQuery = gql`
+  query JobById($id: ID!) {
+    job(id: $id) {
+      id
+      title
+      description
+      date
+      company {
+        id
+        name
+      }
+    }
+  }
+`;
 
 export const getJobs = async () => {
   const query = gql`
@@ -39,21 +52,7 @@ export const getJobs = async () => {
 };
 
 export const getJob = async (id) => {
-  const query = gql`
-    query JobById($id: ID!) {
-      job(id: $id) {
-        id
-        title
-        description
-        date
-        company {
-          id
-          name
-        }
-      }
-    }
-  `;
-  const { data } = await apolloClient.query({ query, variables: { id } });
+  const { data } = await apolloClient.query({ query: jobByIdQuery, variables: { id } });
   return data.job;
 };
 
@@ -82,9 +81,32 @@ export const createJob = async ({ title, description }) => {
       # so that the response has a job object and not a createJob object
       job: createJob(input: $input) {
         id
+        # we need to get all the job info, so that we store it in the cache
+        # this we we avoid getting the job in a separate request after creating it
+        title
+        description
+        date
+        company {
+          id
+          name
+        }
       }
     }
   `;
-  const { data } = await apolloClient.mutate({ mutation, variables: { input: { title, description } } });
+  const { data } = await apolloClient.mutate({
+    mutation,
+    variables: { input: { title, description } },
+    // what this does is: when we call the mutation to create the job, it returns the created job
+    // so we explicitly add the returned data to the cache
+    // so that the next time this job is queried, it's already in cache
+    update: (cache, { data }) => {
+      cache.writeQuery({
+        query: jobByIdQuery,
+        variables: { id: data.job.id },
+        data,
+      });
+    },
+  });
+
   return data.job;
 };
