@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { companyLoader, getCompany } from "./db/companies";
+import { getCompany } from "./db/companies";
 import { createJob, deleteJob, getJob, getJobs, getJobsByCompanyId, updateJob } from "./db/jobs";
 
 export const resolvers = {
@@ -42,7 +42,7 @@ export const resolvers = {
     // because along with each job we also need the company name
     // > How to resolve this? BATCH CALLS TO getCompany()
     // this way all the calls to getCompany (in this query) are batched together into 1 call
-    company: (job) => companyLoader.load(job.companyId),
+    company: (job, _args, { companyLoader }) => companyLoader.load(job.companyId),
   },
 
   Mutation: {
