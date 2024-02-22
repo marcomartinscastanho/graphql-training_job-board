@@ -1,16 +1,14 @@
 import { GraphQLError } from "graphql";
-import { getCompany } from "./db/companies";
+import { companyLoader, getCompany } from "./db/companies";
 import { createJob, deleteJob, getJob, getJobs, getJobsByCompanyId, updateJob } from "./db/jobs";
 
 export const resolvers = {
   Query: {
     company: async (_root, { id }) => {
       const company = await getCompany(id);
-
       if (!company) {
         throw notFoundError("No Company found with id " + id);
       }
-
       return company;
     },
     // the first parameter of this resolver is the root object, which is useless here
@@ -28,7 +26,6 @@ export const resolvers = {
   // when you query for objects that exist on the DB, graphql will return them
   // but if you query for fields that are not on the DB, or are under a different name
   // then you need a resolver for those fields (e.g. job doesn't have a date column)
-
   Company: {
     jobs: (company) => getJobsByCompanyId(company.id),
   },
@@ -37,7 +34,15 @@ export const resolvers = {
     // resolver function always receives the parent object as the first parameter
     // which in this case is the job object
     date: (job) => job.createdAt.slice(0, "yyyy-mm-dd".length),
-    company: (job) => getCompany(job.companyId),
+    // this is a problem: when we get all jobs, it calls this job:company resolver for each job
+    // resulting in N calls to getCompany
+    // even worse, there are multiple jobs in the same company,
+    // but it still calls getCompany for each job, even if it's the same company multiple times
+    // this is the N+1 problem: 1 call to getJobs adds N calls to getCompany
+    // because along with each job we also need the company name
+    // > How to resolve this? BATCH CALLS TO getCompany()
+    // this way all the calls to getCompany (in this query) are batched together into 1 call
+    company: (job) => companyLoader.load(job.companyId),
   },
 
   Mutation: {
