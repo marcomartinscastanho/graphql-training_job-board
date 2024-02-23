@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { getCompany } from "./db/companies";
-import { createJob, deleteJob, getJob, getJobs, getJobsByCompanyId, updateJob } from "./db/jobs";
+import { countJobs, createJob, deleteJob, getJob, getJobs, getJobsByCompanyId, updateJob } from "./db/jobs";
 
 export const resolvers = {
   Query: {
@@ -20,7 +20,11 @@ export const resolvers = {
       }
       return job;
     },
-    jobs: (_root, { limit, offset }) => getJobs(limit, offset),
+    jobs: async (_root, { limit, offset }) => {
+      const items = await getJobs(limit, offset);
+      const totalCount = await countJobs();
+      return { items, totalCount };
+    },
   },
 
   // when you query for objects that exist on the DB, graphql will return them
