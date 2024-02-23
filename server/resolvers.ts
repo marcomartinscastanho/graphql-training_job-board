@@ -20,7 +20,7 @@ export const resolvers = {
       }
       return job;
     },
-    jobs: () => getJobs(),
+    jobs: (_root, { limit }) => getJobs(limit),
   },
 
   // when you query for objects that exist on the DB, graphql will return them
