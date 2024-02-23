@@ -6,8 +6,8 @@ export const useCompany = (id) => {
   return { company: data?.company, error: Boolean(error), loading };
 };
 
-export const useJobs = () => {
-  const { data, error, loading } = useQuery(jobsQuery, { fetchPolicy: "network-only" });
+export const useJobs = (limit, offset) => {
+  const { data, error, loading } = useQuery(jobsQuery, { variables: { limit, offset }, fetchPolicy: "network-only" });
   return { jobs: data?.jobs, error: Boolean(error), loading };
 };
 
